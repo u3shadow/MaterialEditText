@@ -23,7 +23,6 @@ public class MaterialEditText extends EditText {
     private boolean showCleanButton = true;
     private int iconOuterWidth;
     private int iconOuterHeight;
-
     public MaterialEditText(Context context) {
         super(context);
         init();
@@ -38,6 +37,13 @@ public class MaterialEditText extends EditText {
         super(context, attrs, defStyleAttr);
         init();
     }
+     public boolean isShowCleanButton() {
+        return showCleanButton;
+    }
+
+    public void setShowCleanButton(boolean showCleanButton) {
+        this.showCleanButton = showCleanButton;
+    }
     private void init(){
         iconOuterHeight = getPiexl(32);
         iconOuterWidth = getPiexl(48);
@@ -50,17 +56,19 @@ public class MaterialEditText extends EditText {
         int lineStartY = getScrollY()+getHeight()-getPaddingBottom();
         int startX = getScrollX()+getPaddingLeft();
         int endX = getScrollX()+getWidth()-getPaddingRight();
-        if(hasFocus()&&isEnabled()&&!TextUtils.isEmpty(getText())&&showCleanButton){
+        if(hasFocus()&&isEnabled()&&!TextUtils.isEmpty(getText())&&showCleanButton){//判断是否显示
             paint.setAlpha(255);
-            int buttonLeft;
-            if (isRTL()){
+            int buttonLeft;//保存清除按钮的水平位置
+            if (isRTL()){//确定布局方向
                 buttonLeft = startX;
             }else{
                 buttonLeft = endX - iconOuterWidth;
             }
             Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.met_ic_clear);
             buttonLeft += (iconOuterWidth - bitmap.getWidth())/2;
+            //获取按钮的顶部位置
             int iconTop = lineStartY+bottomSpacing - iconOuterHeight + (iconOuterHeight - bitmap.getHeight())/2;
+            //绘制
             canvas.drawBitmap(bitmap,buttonLeft,iconTop,paint);
         }
         if(!hideUnderLine){//绘制下划线
