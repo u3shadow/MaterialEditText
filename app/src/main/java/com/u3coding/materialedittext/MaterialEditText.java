@@ -24,6 +24,7 @@ public class MaterialEditText extends android.support.v7.widget.AppCompatEditTex
     private boolean isCharactersCounter = true;
     private int baseColor;
     private int errorColor;
+    private boolean singleEllipsis = true;
 
     public boolean isCharactersCounter() {
         return isCharactersCounter;
@@ -85,14 +86,16 @@ public class MaterialEditText extends android.support.v7.widget.AppCompatEditTex
         Paint.FontMetrics metrics = textPaint.getFontMetrics();
         float relativeHight = -metrics.ascent - metrics.descent;
         if ((hasFocus()&&hasCharacterCounter())||!isCharactersCountValid()){
-            textPaint.setColor(isCharactersCountValid()?baseColor:errorColor);
+            textPaint.setColor(isCharactersCountValid()?Color.BLUE:errorColor);
             String counter = getCounterString();
             canvas.drawText(counter,isRTL()?startX:endX-textPaint.measureText(counter),lineStartY+getPiexl(10)+relativeHight,textPaint);
         }
-        if(hasFocus()&&isEnabled()&&!TextUtils.isEmpty(getText())&&showCleanButton){//判断是否显示
+        //判断是否显示
+        if(hasFocus()&&isEnabled()&&!TextUtils.isEmpty(getText())&&showCleanButton){
             paint.setAlpha(255);
             int buttonLeft;//保存清除按钮的水平位置
-            if (isRTL()){//确定布局方向
+            //确定布局方向
+            if (isRTL()){
                 buttonLeft = startX;
             }else{
                 buttonLeft = endX - iconOuterWidth;
@@ -104,19 +107,22 @@ public class MaterialEditText extends android.support.v7.widget.AppCompatEditTex
             //绘制
             canvas.drawBitmap(bitmap,buttonLeft,iconTop,paint);
         }
-        if(!hideUnderLine){//绘制下划线
+
+        //绘制下划线
+        if(!hideUnderLine){
             //获取位置
             lineStartY += bottomSpacing;
-            if (!isInternalValid()){//是否内容合法，不合法线为红色
+            //是否内容合法，不合法线为红色
+            if (!isInternalValid()){
                 paint.setColor(Color.RED);
                 canvas.drawRect(startX,lineStartY,endX,lineStartY+6,paint);
-            }else if(!isEnabled()){//是否开启
+            }else if(!isEnabled()){
                 paint.setColor(Color.BLACK);
                 float interval  = 1;
                 for (float xOffset = 0;xOffset < getWidth();xOffset += interval*3){
                     canvas.drawRect(startX+xOffset,lineStartY,startX+xOffset+interval,lineStartY+6,paint);
                 }
-            }else if(hasFocus()){//是否获取焦点
+            }else if(hasFocus()){
                 paint.setColor(Color.BLUE);
                 canvas.drawRect(startX,lineStartY,endX,lineStartY+6,paint);
             }else{//正常绘制
@@ -124,7 +130,27 @@ public class MaterialEditText extends android.support.v7.widget.AppCompatEditTex
                 canvas.drawRect(startX,lineStartY,endX,lineStartY+6,paint);
             }
         }
-
+        if (textPaint.measureText(getText().toString()) > getWidth()){
+            singleEllipsis = true;
+        }else{
+            singleEllipsis = false;
+        }
+        if (hasFocus()&&singleEllipsis){
+            paint.setColor(isInternalValid()?Color.BLUE:Color.RED);
+            int startY = lineStartY + bottomSpacing;
+            int bottomEllipsisSize = getPiexl(10);
+            int ellipsisStartX;
+            //确定布局方向
+            if (isRTL()){
+                ellipsisStartX = endX;
+            }else{
+                ellipsisStartX = startX;
+            }
+            int signum = isRTL() ? -1 :1;
+            canvas.drawCircle(ellipsisStartX + signum * bottomEllipsisSize / 2, startY + bottomEllipsisSize / 2, bottomEllipsisSize / 2, paint);
+            canvas.drawCircle(ellipsisStartX + signum * bottomEllipsisSize * 5 / 2, startY + bottomEllipsisSize / 2, bottomEllipsisSize / 2, paint);
+            canvas.drawCircle(ellipsisStartX + signum * bottomEllipsisSize * 9 / 2, startY + bottomEllipsisSize / 2, bottomEllipsisSize / 2, paint);
+        }
         super.onDraw(canvas);
     }
 

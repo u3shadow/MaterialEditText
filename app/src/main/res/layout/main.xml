@@ -5,6 +5,9 @@
 <com.u3coding.materialedittext.MaterialEditText
     android:hint="this is a label"
     android:maxEms="20"
+    android:textSize="20sp"
+    android:maxLines="1"
+    android:inputType="textPassword"
     android:layout_width="match_parent"
     android:layout_height="wrap_content" />
     <com.u3coding.materialedittext.MaterialEditText
