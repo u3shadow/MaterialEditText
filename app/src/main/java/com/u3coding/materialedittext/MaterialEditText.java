@@ -9,20 +9,31 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
-import android.support.v7.widget.AppCompatEditText;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.EditText;
 
-public class MaterialEditText extends EditText {
+public class MaterialEditText extends android.support.v7.widget.AppCompatEditText {
     private boolean hideUnderLine;
     private int bottomSpacing;
     private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private boolean showCleanButton = true;
     private int iconOuterWidth;
     private int iconOuterHeight;
+    private boolean isCharactersCounter = true;
+    private int baseColor;
+    private int errorColor;
+
+    public boolean isCharactersCounter() {
+        return isCharactersCounter;
+    }
+
+    public void setCharactersCounter(boolean charactersCounter) {
+        isCharactersCounter = charactersCounter;
+    }
+
+
     public MaterialEditText(Context context) {
         super(context);
         init();
@@ -47,8 +58,22 @@ public class MaterialEditText extends EditText {
     private void init(){
         iconOuterHeight = getPiexl(32);
         iconOuterWidth = getPiexl(48);
+        baseColor = getResources().getColor(R.color.text);
+        errorColor = getResources().getColor(R.color.error);
         bottomSpacing = getResources().getDimensionPixelSize(R.dimen.inner_components_spacing);
+        if (getMaxEms() > 0){
+            isCharactersCounter = true;
+        }else{
+            isCharactersCounter = false;
+        }
+        textPaint.setTextSize(getTextSize());
+        Paint.FontMetrics metrics = textPaint.getFontMetrics();
+        float relativeHight = -metrics.ascent - metrics.descent;
+        if (isCharactersCounter) {//给下方文字留出位置
+            setPadding(getPaddingLeft(),getPaddingTop(),getPaddingRight(),getPaddingBottom()+(int)relativeHight);
+        }
     }
+
     @Override
     protected void onDraw(Canvas canvas) {
         setBackground(null);
@@ -56,6 +81,14 @@ public class MaterialEditText extends EditText {
         int lineStartY = getScrollY()+getHeight()-getPaddingBottom();
         int startX = getScrollX()+getPaddingLeft();
         int endX = getScrollX()+getWidth()-getPaddingRight();
+        textPaint.setTextSize(getTextSize());
+        Paint.FontMetrics metrics = textPaint.getFontMetrics();
+        float relativeHight = -metrics.ascent - metrics.descent;
+        if ((hasFocus()&&hasCharacterCounter())||!isCharactersCountValid()){
+            textPaint.setColor(isCharactersCountValid()?baseColor:errorColor);
+            String counter = getCounterString();
+            canvas.drawText(counter,isRTL()?startX:endX-textPaint.measureText(counter),lineStartY+getPiexl(10)+relativeHight,textPaint);
+        }
         if(hasFocus()&&isEnabled()&&!TextUtils.isEmpty(getText())&&showCleanButton){//判断是否显示
             paint.setAlpha(255);
             int buttonLeft;//保存清除按钮的水平位置
@@ -91,8 +124,35 @@ public class MaterialEditText extends EditText {
                 canvas.drawRect(startX,lineStartY,endX,lineStartY+6,paint);
             }
         }
+
         super.onDraw(canvas);
     }
+
+    private String getCounterString(){
+        String s = "";
+        if (getMaxEms()  > 0){
+            s = getText().toString().length()+"/"+getMaxEms();
+        }else{
+            s = "";
+        }
+        return  s;
+    }
+    private boolean hasCharacterCounter() {
+       return !TextUtils.isEmpty(getText())&&getText().toString().length() > 0;
+    }
+
+    private boolean isCharactersCountValid() {
+        boolean result;
+        if (getMaxEms() < 0){
+            result = true;
+        }else if (getText().toString().length() > getMaxEms()){
+            result = false;
+        }else{
+            result = true;
+        }
+        return result;
+    }
+
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     public boolean isRTL(){
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1){

@@ -7,5 +7,5 @@ u
 Eapp/src/main/java/com/u3coding/materialedittext/MaterialEditText.java,5\f\5fadaee9a520640f4c39769b32e2021d82fe53b1
 ƒ
 Sapp/src/androidTest/java/com/u3coding/materialedittext/ExampleInstrumentedTest.java,e\f\ef7107bebeb1cba5b25cd15663cc8675e18ff232
-x
-Happ/src/main/java/com/u3coding/materialedittext/et/MaterialEditText.java,1\4\14efbc7ba5aa08c8e538cfd9e52d2fa6d9e21dad
+l
+<app/src/main/java/com/u3coding/materialedittext/Density.java,8\3\8318581be48039a68b73edcdd81b4a5b349aa3f2
