@@ -82,6 +82,19 @@ public class MaterialEditText extends android.support.v7.widget.AppCompatEditTex
         int lineStartY = getScrollY()+getHeight()-getPaddingBottom();
         int startX = getScrollX()+getPaddingLeft();
         int endX = getScrollX()+getWidth()-getPaddingRight();
+        paint.setAlpha(255);
+    /*    if (true){
+            Bitmap icon = BitmapFactory.decodeResource(getResources(),R.drawable.met_ic_clear);
+            int iconLeft = startX;
+            int iconTop = lineStartY-icon.getHeight();
+            canvas.drawBitmap(icon,iconLeft,iconTop,paint);
+        }
+        if(iconRightBitmaps != null){
+            Bitmap icon = BitmapFactory.decodeResource(getResources(),R.drawable.met_ic_clear);
+            int iconLeft = startX+getPaddingLeft()
+            int iconTop =
+            canvas.drawBitmap(icon,iconLeft,iconTop,paint);
+        }*/
         textPaint.setTextSize(getTextSize());
         Paint.FontMetrics metrics = textPaint.getFontMetrics();
         float relativeHight = -metrics.ascent - metrics.descent;
@@ -130,7 +143,7 @@ public class MaterialEditText extends android.support.v7.widget.AppCompatEditTex
                 canvas.drawRect(startX,lineStartY,endX,lineStartY+6,paint);
             }
         }
-        if (textPaint.measureText(getText().toString()) > getWidth()){
+        if (getText().toString().length() > getMaxEms()){
             singleEllipsis = true;
         }else{
             singleEllipsis = false;
