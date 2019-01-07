@@ -9,6 +9,9 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Build;
+import android.text.Layout;
+import android.text.StaticLayout;
+import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
@@ -17,7 +20,7 @@ public class MaterialEditText extends android.support.v7.widget.AppCompatEditTex
     private boolean hideUnderLine;
     private int bottomSpacing;
     private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private Paint textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
     private boolean showCleanButton = true;
     private int iconOuterWidth;
     private int iconOuterHeight;
@@ -25,6 +28,9 @@ public class MaterialEditText extends android.support.v7.widget.AppCompatEditTex
     private int baseColor;
     private int errorColor;
     private boolean singleEllipsis = true;
+    private StaticLayout textLayout;
+    private String errorText = "text error text";
+    private String hintText;
 
     public boolean isCharactersCounter() {
         return isCharactersCounter;
@@ -73,6 +79,7 @@ public class MaterialEditText extends android.support.v7.widget.AppCompatEditTex
         if (isCharactersCounter) {//给下方文字留出位置
             setPadding(getPaddingLeft(),getPaddingTop(),getPaddingRight(),getPaddingBottom()+(int)relativeHight);
         }
+
     }
 
     @Override
@@ -163,6 +170,22 @@ public class MaterialEditText extends android.support.v7.widget.AppCompatEditTex
             canvas.drawCircle(ellipsisStartX + signum * bottomEllipsisSize / 2, startY + bottomEllipsisSize / 2, bottomEllipsisSize / 2, paint);
             canvas.drawCircle(ellipsisStartX + signum * bottomEllipsisSize * 5 / 2, startY + bottomEllipsisSize / 2, bottomEllipsisSize / 2, paint);
             canvas.drawCircle(ellipsisStartX + signum * bottomEllipsisSize * 9 / 2, startY + bottomEllipsisSize / 2, bottomEllipsisSize / 2, paint);
+        }
+        Layout.Alignment alignment = Layout.Alignment.ALIGN_NORMAL;
+        textLayout = new StaticLayout(errorText != null?errorText:hintText, (TextPaint) textPaint,getWidth(),alignment,1.0f,0.0f,true);
+        setPadding(getPaddingLeft(),getPaddingTop(),getPaddingRight(),textLayout.getHeight()+bottomSpacing);
+        if(textLayout != null){
+            if (errorText != null||(!TextUtils.isEmpty(hintText) &&hasFocus())){
+                textPaint.setColor(errorText == null?Color.RED:Color.BLUE);
+                canvas.save();
+                if (isRTL()){
+                    canvas.translate(startX,lineStartY);
+                }else{
+                    canvas.translate(0,lineStartY-1);
+                }
+                textLayout.draw(canvas);
+                canvas.restore();
+            }
         }
         super.onDraw(canvas);
     }
