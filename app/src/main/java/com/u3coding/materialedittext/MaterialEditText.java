@@ -14,6 +14,7 @@ import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.TextureView;
 import android.view.View;
 
 public class MaterialEditText extends android.support.v7.widget.AppCompatEditText {
@@ -31,6 +32,8 @@ public class MaterialEditText extends android.support.v7.widget.AppCompatEditTex
     private StaticLayout textLayout;
     private String errorText = "text error text";
     private String hintText;
+    private boolean labelFloat = true;
+    private String labelText = "this is a label";
 
     public boolean isCharactersCounter() {
         return isCharactersCounter;
@@ -186,6 +189,14 @@ public class MaterialEditText extends android.support.v7.widget.AppCompatEditTex
                 textLayout.draw(canvas);
                 canvas.restore();
             }
+        }
+        if(labelFloat){
+            textPaint.setTextSize(getTextSize()-5);
+            textPaint.setColor(Color.BLUE);
+            float width = textPaint.measureText(labelText);
+            float labelStartX = startX+getPaddingLeft();
+            float lableY = TextUtils.isEmpty(getText())?lineStartY-bottomSpacing:lineStartY - getTextSize()-bottomSpacing;
+            canvas.drawText(labelText,labelStartX,lableY,textPaint);
         }
         super.onDraw(canvas);
     }
